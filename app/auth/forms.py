@@ -18,8 +18,8 @@ class RegistrationForm(Form):
                                      '^[A-Za-z][A-Za-z0-9_.]*$', 0, 'Username must have only letters,' \
                                                                    'numbers,dots or underscores')])
     password = PasswordField('Password', validators=[
-        Required(), EqualTo('password2', message='Passwodr must match.')])
-    password2 = PasswordField('Comfirm password', validators=[Required()] )
+        Required(), EqualTo('password2', message='Password must match.')])
+    password2 = PasswordField('Comfirm password', validators=[Required()])
     submit = SubmitField('Register')
 
     def validate_email(self,field):
@@ -30,3 +30,10 @@ class RegistrationForm(Form):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('username already register')
 
+
+class ChangePasswordForm(Form):
+    old_password = PasswordField('Old password', validators=[Required()])
+    password = PasswordField('New password', validators=[
+        Required(), EqualTo('password2', message='Password must match.')])
+    password2 = PasswordField('Confirm new password', validators=[Required()])
+    submit = SubmitField('Update Password')
