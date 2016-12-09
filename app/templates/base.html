@@ -9,6 +9,25 @@
 {% endblock %}
 
 {% block navbar %}
+    <ul class="nav nav-pills ">
+        <ol class="breadcrumb">
+            <li><a href="##">首页</a></li>
+            <li><a>我的书</a></li>
+            <li>《CSS教程》</li>
+        </ol>
+        <li class="dropdown">
+            <a href="##" class="dropdown-toggle" data-toggle="dropdown">教程<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="##">Home</a></li>
+                <li><a href="##">CSS3</a></li>
+                <li class="active"><a href="##">Sass</a></li>
+                <li class="disabled"><a href="##">jQuery</a></li>
+                <li class="nav-divider"></li>
+                <li><a href="##">Responsive</a></li>
+            </ul>
+        </li>
+    </ul>
+
 <div class="navbar navbar-inverse" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -19,6 +38,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{{ url_for('main.index') }}">Flasky</a>
+            <a class="navbar-brand" href="http://www.baidu.com">Mytest</a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -26,7 +46,14 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
-                <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                    <li class="dropdown">
+                        <a href="{{ url_for('main.index') }}" class="dropdown-toggle" data-toggle="dropdown">
+                            {{ current_user.username }}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                            <li><a href="{{ url_for('auth.change_password') }}">Change password</a></li>
+                        </ul>
+                    </li>
                 {% else %}
                 <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
                 {% endif %}

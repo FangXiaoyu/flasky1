@@ -13,7 +13,7 @@ class LoginForm(Form):
     submit = SubmitField('Log In')
 
 class RegistrationForm(Form):
-    email = StringField('Email', validators=[Required(), Length(1,64), Email()])
+    email = StringField('Email', validators=[Required(), Length(1, 64), Email()])
     username = StringField('Username', validators=[Required(), Length(1,64), Regexp( \
                                      '^[A-Za-z][A-Za-z0-9_.]*$', 0, 'Username must have only letters,' \
                                                                    'numbers,dots or underscores')])
@@ -37,3 +37,22 @@ class ChangePasswordForm(Form):
         Required(), EqualTo('password2', message='Password must match.')])
     password2 = PasswordField('Confirm new password', validators=[Required()])
     submit = SubmitField('Update Password')
+
+
+class Send_ResetPasswordForm(Form):
+    email = StringField('Email', validators=[Required(), Length(1, 64), Email()])
+    send = SubmitField('send a resetpassword email')
+
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            return True
+        else:
+            return False
+
+
+class ResetPasswordForm(Form):
+    email = StringField('Email', validators=[Required(), Length(1, 64), Email()])
+    password = PasswordField('New password', validators=[
+        Required(), EqualTo('password2', message='Password must match.')])
+    password2 = PasswordField('Confirm new password', validators=[Required()])
+    submit = SubmitField('Reset Password')

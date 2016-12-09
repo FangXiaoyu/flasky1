@@ -5,7 +5,7 @@ from . import auth
 from .. import db
 from ..models import User
 from ..email import send_email
-from .forms import LoginForm, RegistrationForm  # ChangePasswordForm
+from .forms import LoginForm, RegistrationForm, ChangePasswordForm, Send_ResetPasswordForm, ResetPasswordForm
 
 @auth.before_app_request
 def before_request():
@@ -33,6 +33,36 @@ def login():
             return redirect(request.args.get('next') or url_for('main.index'))
         flash('Invalid username or password.')
     return render_template('auth/login.html', form=form)
+
+
+@auth.route('/send_resetpassword_email', methods=['GET', 'POST'])
+def send_resetpassword_email():
+    form = Send_ResetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None:
+            token = user.generate_confirmation_token()
+            send_email(user.email, 'Reset your password ',
+                       'auth/email/resetpassword', user=user, token=token)
+            flash("a resetpassword email has been sent to you by email,\
+             if you don't recent it for a while,please ensure you have input the right email address ")
+        else:
+            flash('the email do not exist')
+    return render_template('auth/send_resetpassword_email.html', form=form)
+
+
+@auth.route('/resetpassword/<token>', methods=['GET', 'POST'])
+def resetpassword(token):
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        user.password = form.password.data
+        db.session.add(user)
+        flash('you have reset your password')
+        return redirect(url_for('auth.login'))
+    return render_template('auth/reset_password.html', form=form)
+
+
 
 
 @auth.route('/logout')
@@ -82,7 +112,7 @@ def resend_confirmation():
     return redirect(url_for('main.index'))
 
 
-@auth.route('/change-password', methods=['GET', 'POST'])
+@auth.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
     form = ChangePasswordForm()
@@ -95,3 +125,5 @@ def change_password():
         else:
             flash('Invalid password.')
     return render_template("auth/change_password.html", form=form)
+
+# @auth.route('/change_')
